@@ -11,6 +11,8 @@ buildscript {
         lifecycle_version = "2.6.0-alpha02"
         nav_version = "2.5.2"
         gms_location_version = "20.0.0"
+        moshi_version = "1.13.0"
+        retrofit_version = "2.9.0"
     }
 
     repositories {
