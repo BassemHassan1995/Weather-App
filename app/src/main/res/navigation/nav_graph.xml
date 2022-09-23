@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/weather">
+
+    <fragment
+        android:id="@+id/weather"
+        android:name="bassem.ahoy.weather.ui.weather.WeatherFragment"
+        tools:layout="@layout/fragment_weather" />
+
+    <fragment
+        android:id="@+id/settings"
+        android:name="bassem.ahoy.weather.ui.settings.SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/search"
+        android:name="bassem.ahoy.weather.ui.search.SearchFragment"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/favorites"
+        android:name="bassem.ahoy.weather.ui.favorites.FavoritesFragment"
+        tools:layout="@layout/fragment_favorites" />
+
+</navigation>
