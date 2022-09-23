@@ -18,3 +18,8 @@ data class DayWeather(
 enum class DegreeUnit{
     CELSIUS, FAHRENHEIT
 }
+
+fun DegreeUnit.getDegreeFormat(): String = when(this){
+    DegreeUnit.CELSIUS -> "metric"
+    DegreeUnit.FAHRENHEIT -> "imperial"
+}
