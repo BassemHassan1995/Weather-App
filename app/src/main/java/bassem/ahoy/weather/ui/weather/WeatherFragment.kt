@@ -15,10 +15,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.R
+import bassem.ahoy.weather.data.model.DayWeather
 import bassem.ahoy.weather.databinding.FragmentWeatherBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
 import bassem.ahoy.weather.utils.extensions.showSnackbar
 import bassem.ahoy.weather.utils.extensions.showToast
+import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,15 +44,15 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = WeatherDayAdapter {
-            //TODO: Open details
-        }
+        adapter = WeatherDayAdapter()
     }
 
     override fun setupViews(view: View) {
         setupPermission()
         with(binding) {
             swipeRefreshLayout.setOnRefreshListener {
+                swipeRefreshLayout.isRefreshing = false
+
                 viewModel.onRefresh()
             }
             recyclerViewWords.adapter = adapter
@@ -74,6 +76,14 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
                 weatherDays.flowWithLifecycle(lifecycle)
                     .collect {
                         adapter.submitList(it)
+                        if (it.isNotEmpty())
+                            bindFirstDay(it.first())
+                    }
+            }
+            viewLifecycleOwner.lifecycleScope.launch {
+                city.flowWithLifecycle(lifecycle)
+                    .collect {
+                        binding.textViewCity.text = it
                     }
             }
         }
@@ -81,6 +91,18 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
             WeatherEvent.NoLocationDetectedEvent -> showError(R.string.no_location_detected)
             WeatherEvent.GetLocationEvent -> checkPermissions()
             is WeatherEvent.ErrorGettingForecastEvent -> TODO()
+        }
+    }
+
+    private fun bindFirstDay(first: DayWeather) {
+        with(binding) {
+            header.visibility = View.VISIBLE
+            textViewDay.text = first.weekDay
+            textViewDate.text = first.date
+            textViewDegree.text = first.temperature
+            Glide.with(requireContext())
+                .load(first.iconUrl)
+                .into(imageViewIcon)
         }
     }
 

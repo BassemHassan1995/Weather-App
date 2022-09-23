@@ -40,6 +40,13 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
+    private fun getData(city: String) {
+        startLoading()
+        launchCoroutine {
+            handleResult(repository.getWeekForecast(city))
+        }
+    }
+
     private fun handleResult(result: DataResult<WeekForecast>) {
         when (result) {
             is DataResult.Failure -> result.cause.localizedMessage?.let {
@@ -65,7 +72,8 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     }
 
     override fun onRefresh() {
-        TODO("Not yet implemented")
+        if (city.value != noLocationDetected)
+            getData(city.value)
     }
 
 }

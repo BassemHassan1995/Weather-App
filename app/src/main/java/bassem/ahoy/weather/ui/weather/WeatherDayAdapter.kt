@@ -13,26 +13,26 @@ import bassem.ahoy.weather.data.model.DegreeUnit
 import bassem.ahoy.weather.databinding.DayWeatherItemBinding
 import bassem.ahoy.weather.databinding.ItemCollapsedBinding
 import bassem.ahoy.weather.databinding.ItemExpandedBinding
+import com.bumptech.glide.Glide
 
-class WeatherDayAdapter(private val onItemClicked: (DayWeather) -> Unit = {}) :
+class WeatherDayAdapter :
     ListAdapter<DayWeather, WeatherDayAdapter.ViewHolder>(DiffCallback) {
 
     class ViewHolder(private var binding: DayWeatherItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(dayWeather: DayWeather, listener: (DayWeather) -> Unit) {
+        fun bind(dayWeather: DayWeather) {
             with(binding) {
                 root.setOnClickListener {
                     renderCollapsedView(layoutCollapsed, dayWeather)
-                    renderExpandedView(layoutExpanded, dayWeather, listener)
+                    renderExpandedView(layoutExpanded, dayWeather)
                 }
             }
         }
 
         private fun renderExpandedView(
             layoutExpanded: ItemExpandedBinding,
-            dayWeather: DayWeather,
-            listener: (DayWeather) -> Unit
+            dayWeather: DayWeather
         ) = with(layoutExpanded) {
             root.visibility =
                 if (root.isVisible)
@@ -44,7 +44,6 @@ class WeatherDayAdapter(private val onItemClicked: (DayWeather) -> Unit = {}) :
             textViewSunset.text = dayWeather.sunset
             textViewHumidity.text = dayWeather.humidity
             textViewSpeed.text = dayWeather.windSpeed
-            btnOpenDetails.setOnClickListener { listener(dayWeather) }
 
         }
 
@@ -61,6 +60,9 @@ class WeatherDayAdapter(private val onItemClicked: (DayWeather) -> Unit = {}) :
                     DegreeUnit.FAHRENHEIT -> R.string.degree_f
                 }
             )
+            Glide.with(ivIconUrl.context)
+                .load(dayWeather.iconUrl)
+                .into(ivIconUrl)
         }
     }
 
@@ -79,7 +81,7 @@ class WeatherDayAdapter(private val onItemClicked: (DayWeather) -> Unit = {}) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.bind(getItem(position), onItemClicked)
+        holder.bind(getItem(position))
 
     }
 
