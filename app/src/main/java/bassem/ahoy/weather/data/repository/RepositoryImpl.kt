@@ -2,10 +2,7 @@ package bassem.ahoy.weather.data.repository
 
 import android.location.Location
 import bassem.ahoy.weather.data.api.ApiHelper
-import bassem.ahoy.weather.data.model.DayForecast
-import bassem.ahoy.weather.data.model.DayWeather
-import bassem.ahoy.weather.data.model.WeekForecast
-import bassem.ahoy.weather.data.model.WeekForecastResponse
+import bassem.ahoy.weather.data.model.*
 import bassem.ahoy.weather.utils.DataResult
 import bassem.ahoy.weather.utils.extensions.getApiError
 import bassem.ahoy.weather.utils.extensions.getDate
@@ -38,6 +35,8 @@ class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) : Rep
         }
     }
 
+    private fun getDegreeUnitFromSettings(): DegreeUnit = DegreeUnit.CELSIUS
+
     private fun WeekForecastResponse.toWeekForecast(): WeekForecast =
         WeekForecast(city = city.name, weatherDays = list.map { it.toDayWeather() })
 
@@ -51,6 +50,7 @@ class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper) : Rep
             description = weather[0].description,
             humidity = humidity.toString(),
             windSpeed = "s $speed mph",
-            iconUrl = apiHelper.getIconUrl(weather[0].icon)
+            iconUrl = apiHelper.getIconUrl(weather[0].icon),
+            unit = getDegreeUnitFromSettings()
         )
 }

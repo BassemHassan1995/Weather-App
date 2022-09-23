@@ -3,7 +3,7 @@ package bassem.ahoy.weather.ui.weather
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.location.Location
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.R
 import bassem.ahoy.weather.databinding.FragmentWeatherBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
@@ -19,11 +21,16 @@ import bassem.ahoy.weather.utils.extensions.showSnackbar
 import bassem.ahoy.weather.utils.extensions.showToast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+
+    private lateinit var adapter: WeatherDayAdapter
 
     override val viewModel by activityViewModels<WeatherViewModel>()
 
@@ -33,24 +40,48 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
     ): FragmentWeatherBinding =
         FragmentWeatherBinding.inflate(inflater, container, false)
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        adapter = WeatherDayAdapter {
+            //TODO: Open details
+        }
+    }
+
     override fun setupViews(view: View) {
         setupPermission()
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.onRefresh()
+        with(binding) {
+            swipeRefreshLayout.setOnRefreshListener {
+                viewModel.onRefresh()
+            }
+            recyclerViewWords.adapter = adapter
         }
     }
 
     override fun observeData(event: WeatherEvent) {
-        when(event){
+        with(viewModel)
+        {
+            viewLifecycleOwner.lifecycleScope.launch {
+                isLoading.flowWithLifecycle(lifecycle)
+                    .collect {
+                        binding.progressBar.visibility = when (it) {
+                            true -> View.VISIBLE
+                            false -> View.GONE
+                        }
+                    }
+
+            }
+            viewLifecycleOwner.lifecycleScope.launch {
+                weatherDays.flowWithLifecycle(lifecycle)
+                    .collect {
+                        adapter.submitList(it)
+                    }
+            }
+        }
+        when (event) {
             WeatherEvent.NoLocationDetectedEvent -> showError(R.string.no_location_detected)
             WeatherEvent.GetLocationEvent -> checkPermissions()
-            is WeatherEvent.UpdateLocationEvent -> renderLocationData(event.location)
+            is WeatherEvent.ErrorGettingForecastEvent -> TODO()
         }
-    }
-
-    private fun renderLocationData(location: Location) {
-        binding.progressBar.visibility = View.GONE
-        showToast("Location is here")
     }
 
     private fun showError(@StringRes stringRes: Int) {

@@ -7,6 +7,8 @@ import bassem.ahoy.weather.data.api.ApiHelperImpl
 import bassem.ahoy.weather.data.api.ApiService
 import bassem.ahoy.weather.data.db.AppDatabase
 import bassem.ahoy.weather.data.db.ForecastDao
+import bassem.ahoy.weather.data.repository.Repository
+import bassem.ahoy.weather.data.repository.RepositoryImpl
 import bassem.ahoy.weather.utils.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -51,6 +53,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideForecastDao(appDataBase: AppDatabase): ForecastDao = appDataBase.forecastDao()
+
+    @Provides
+    @Singleton
+    fun provideRepositoryHelper(repository: RepositoryImpl): Repository = repository
 
     @Provides
     @Singleton

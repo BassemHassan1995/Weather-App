@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import kotlinx.coroutines.launch
 
-abstract class BaseFragment<Binding : ViewBinding, UiEvent: Event> : Fragment() {
+abstract class BaseFragment<Binding : ViewBinding, UiEvent : Event> : Fragment() {
 
     protected abstract val viewModel: BaseViewModel<UiEvent>
 
@@ -30,6 +32,7 @@ abstract class BaseFragment<Binding : ViewBinding, UiEvent: Event> : Fragment() 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViews(view)
+        observeData()
     }
 
     override fun onDestroyView() {
@@ -38,6 +41,18 @@ abstract class BaseFragment<Binding : ViewBinding, UiEvent: Event> : Fragment() 
     }
 
     open fun setupViews(view: View) {}
+
+    private fun observeData() {
+        with(viewModel)
+        {
+            viewLifecycleOwner.lifecycleScope.launch {
+                eventsFlow.flowWithLifecycle(lifecycle)
+                    .collect {
+                        observeData(it)
+                    }
+            }
+        }
+    }
 
     abstract fun observeData(event: UiEvent)
 

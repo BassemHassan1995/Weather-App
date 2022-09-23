@@ -11,5 +11,10 @@ data class DayWeather(
     val description: String = "",
     val windSpeed: String = "",
     val humidity: String = "",
-    val iconUrl: String = ""
+    val iconUrl: String = "",
+    val unit: DegreeUnit = DegreeUnit.CELSIUS
 ) : Serializable
+
+enum class DegreeUnit{
+    CELSIUS, FAHRENHEIT
+}

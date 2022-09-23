@@ -15,6 +15,7 @@
         android:orientation="vertical">
 
         <include
+            android:id="@+id/layout_collapsed"
             layout="@layout/item_collapsed"/>
 
         <include
@@ -23,15 +24,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp" />
-
-        <Button
-            android:id="@+id/btn_open_details"
-            android:backgroundTint="@color/primaryDarkColor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="@string/open_details"
-            android:textAllCaps="false" />
 
     </LinearLayout>
 
