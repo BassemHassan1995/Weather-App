@@ -35,6 +35,9 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
 
     override fun setupViews(view: View) {
         setupPermission()
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.onRefresh()
+        }
     }
 
     override fun observeData(event: WeatherEvent) {
