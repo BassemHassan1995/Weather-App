@@ -1,12 +1,17 @@
 package bassem.ahoy.weather.data.di
 
+import android.content.Context
+import androidx.room.Room
 import bassem.ahoy.weather.data.api.ApiHelper
 import bassem.ahoy.weather.data.api.ApiHelperImpl
 import bassem.ahoy.weather.data.api.ApiService
+import bassem.ahoy.weather.data.db.AppDatabase
+import bassem.ahoy.weather.data.db.ForecastDao
 import bassem.ahoy.weather.utils.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -43,4 +48,13 @@ object AppModule {
     @Singleton
     fun provideApiHelper(apiHelper: ApiHelperImpl): ApiHelper = apiHelper
 
+    @Provides
+    @Singleton
+    fun provideForecastDao(appDataBase: AppDatabase): ForecastDao = appDataBase.forecastDao()
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase = Room
+        .databaseBuilder(appContext, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
+        .build()
 }

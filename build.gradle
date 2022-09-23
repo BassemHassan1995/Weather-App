@@ -13,6 +13,7 @@ buildscript {
         gms_location_version = "20.0.0"
         moshi_version = "1.13.0"
         retrofit_version = "2.9.0"
+        room_version = "2.4.3"
     }
 
     repositories {
