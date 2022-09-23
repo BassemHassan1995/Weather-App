@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 
-abstract class BaseFragment<Binding : ViewBinding> : Fragment() {
+abstract class BaseFragment<Binding : ViewBinding, UiEvent: Event> : Fragment() {
 
-    protected abstract val viewModel: BaseViewModel
+    protected abstract val viewModel: BaseViewModel<UiEvent>
 
     private var _binding: Binding? = null
     protected val binding get() = _binding!!
@@ -26,8 +27,18 @@ abstract class BaseFragment<Binding : ViewBinding> : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupViews(view)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+    open fun setupViews(view: View) {}
+
+    abstract fun observeData(event: UiEvent)
+
 }
