@@ -11,6 +11,7 @@ import bassem.ahoy.weather.utils.extensions.getDate
 import bassem.ahoy.weather.utils.extensions.getTime
 import bassem.ahoy.weather.utils.extensions.getWeekDay
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -33,6 +34,28 @@ class RepositoryImpl @Inject constructor(
             val response = apiHelper.getWeekForecast(
                 location.longitude,
                 location.latitude,
+                getAppSettings().unit.getDegreeFormat()
+            )
+            when (response.isSuccessful) {
+                true -> {
+                    val weekForecast = response.body()?.toWeekForecast()
+                    weekForecast?.apply {
+                        val test = isCityFavorite(cityId)
+                        isFavorite = test
+                    }!!
+                }
+                false -> throw Exception(response.errorBody().toString())
+            }
+        }
+
+    override suspend fun getWeekForecast(
+        latitude: Double,
+        longitude: Double
+    ): DataResult<WeekForecast> =
+        DataResult {
+            val response = apiHelper.getWeekForecast(
+                longitude,
+                latitude,
                 getAppSettings().unit.getDegreeFormat()
             )
             when (response.isSuccessful) {
@@ -76,10 +99,8 @@ class RepositoryImpl @Inject constructor(
             Unit
         }
 
-    override suspend fun getFavorites(): List<CityResponse> =
-        withContext(Dispatchers.Default) {
-            database.forecastDao().getFavoriteCities()
-        }
+    override fun getFavorites(): Flow<List<CityResponse>> =
+        database.forecastDao().getFavoriteCities()
 
     override suspend fun isCityFavorite(cityId: Int): Boolean =
         withContext(Dispatchers.Default) {

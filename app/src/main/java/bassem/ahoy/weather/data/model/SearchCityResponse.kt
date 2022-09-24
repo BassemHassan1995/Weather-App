@@ -9,9 +9,12 @@ import com.squareup.moshi.JsonClass
 data class CityResponse(
     @PrimaryKey var id: Int = 0,
     val name: String,
-    val lat: String,
-    val lon: String,
+    val lat: Double,
+    val lon: Double,
     val country: String,
-    val state: String = "",
     val isFavorite : Boolean = false
 )
+
+fun CityResponse.getFullName() : String{
+    return "$name, $country"
+}

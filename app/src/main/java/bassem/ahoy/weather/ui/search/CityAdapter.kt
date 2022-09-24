@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import bassem.ahoy.weather.data.model.CityResponse
+import bassem.ahoy.weather.data.model.getFullName
 import bassem.ahoy.weather.databinding.SearchItemBinding
 
 class CityAdapter(private val onItemClicked: (CityResponse) -> Unit = {}) :
@@ -17,7 +18,7 @@ class CityAdapter(private val onItemClicked: (CityResponse) -> Unit = {}) :
         fun bind(cityResponse: CityResponse, onItemClicked: (CityResponse) -> Unit) {
             with(binding) {
                 root.setOnClickListener { onItemClicked(cityResponse) }
-                tvCityName.text = "${cityResponse.name}, ${cityResponse.country}"
+                tvCityName.text = cityResponse.getFullName()
             }
         }
     }

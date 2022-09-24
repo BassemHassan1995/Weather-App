@@ -9,6 +9,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.R
 import bassem.ahoy.weather.data.model.CityResponse
+import bassem.ahoy.weather.data.model.getFullName
 import bassem.ahoy.weather.databinding.FragmentFavoritesBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
 import bassem.ahoy.weather.ui.search.CityAdapter
@@ -28,9 +29,10 @@ class FavoritesFragment : BaseFragment<FragmentFavoritesBinding, FavoritesEvent>
         }
     }
 
-    private fun openWeatherDetails(it: CityResponse) {
-        showToast("Open ${it.name}")
-    }
+    private fun openWeatherDetails(cityResponse: CityResponse) =
+        navigateTo(FavoritesFragmentDirections.actionFavoritesToWeather(cityResponse.lat.toFloat(),
+            cityResponse.lon.toFloat()
+        ))
 
     override fun observeData() {
         super.observeData()

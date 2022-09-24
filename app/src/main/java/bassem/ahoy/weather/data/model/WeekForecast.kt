@@ -5,15 +5,14 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "forecast")
 data class WeekForecast(
-    @PrimaryKey(autoGenerate = false) var id: Int = 0,
+    @PrimaryKey val id: Int = 0,
     val city: String,
     val cityId: Int,
     val country: String,
     val weatherDays: List<DayWeather>,
-    val lat: String = "",
-    val lon: String = "",
-    var isFavorite: Boolean = false,
-    val isCurrent: Boolean = true
+    val lat: Double = 0.0,
+    val lon: Double = 0.0,
+    var isFavorite: Boolean = false
 )
 
 fun WeekForecast.toCityResponse(): CityResponse =

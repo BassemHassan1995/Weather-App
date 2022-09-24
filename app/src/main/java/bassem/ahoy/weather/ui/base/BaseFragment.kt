@@ -8,6 +8,8 @@ import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import kotlinx.coroutines.launch
 
@@ -54,6 +56,10 @@ abstract class BaseFragment<Binding : ViewBinding, UiEvent : Event> : Fragment()
                     }
             }
         }
+    }
+
+    protected fun navigateTo(directions: NavDirections) {
+        findNavController().navigate(directions)
     }
 
     abstract fun handleEvent(event: UiEvent)

@@ -2,13 +2,11 @@ package bassem.ahoy.weather.ui.weather
 
 import android.location.Location
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import bassem.ahoy.weather.data.model.CityResponse
-import bassem.ahoy.weather.data.model.DayWeather
-import bassem.ahoy.weather.data.model.WeekForecast
-import bassem.ahoy.weather.data.model.toCityResponse
+import bassem.ahoy.weather.data.model.*
 import bassem.ahoy.weather.data.repository.Repository
 import bassem.ahoy.weather.ui.base.BaseViewModel
 import bassem.ahoy.weather.utils.DataResult
+import bassem.ahoy.weather.utils.extensions.toCoord
 import com.google.android.gms.tasks.OnSuccessListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,16 +24,21 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     private val _currentCity: MutableStateFlow<CityResponse?> = MutableStateFlow(null)
     val currentCity: StateFlow<CityResponse?> = _currentCity
 
-    private var currentLocation: Location? = null
+    private var currentLocation: Coord? = null
 
     init {
         checkCurrentLocation()
     }
 
-    private fun getData(location: Location) {
+    private fun getData(coord: Coord) {
         startLoading()
         launchCoroutine {
-            handleResult(repository.getWeekForecast(location))
+            handleResult(
+                repository.getWeekForecast(
+                    latitude = coord.lat,
+                    longitude = coord.lon
+                )
+            )
         }
     }
 
@@ -59,8 +62,8 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
         if (location == null) {
             sendEvent(WeatherEvent.NoLocationDetectedEvent)
         } else {
-            currentLocation = location
-            getData(location)
+            getData(location.toCoord())
+            currentLocation = location.toCoord()
         }
     }
 

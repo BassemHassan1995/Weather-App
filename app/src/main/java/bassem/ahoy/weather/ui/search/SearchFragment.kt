@@ -27,10 +27,13 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, SearchEvent>() {
         }
     }
 
-    private fun openCityDetails(city: CityResponse) {
-        showToast("Open ${city.name}")
-        //TODO: Open weather data
-    }
+    private fun openCityDetails(city: CityResponse) =
+        navigateTo(
+            SearchFragmentDirections.actionSearchToWeather(
+                city.lat.toFloat(),
+                city.lon.toFloat()
+            )
+        )
 
     override fun getViewBinding(
         inflater: LayoutInflater,

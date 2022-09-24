@@ -1,6 +1,5 @@
 package bassem.ahoy.weather.ui.favorites
 
-import android.util.Log
 import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.data.repository.Repository
 import bassem.ahoy.weather.ui.base.BaseViewModel
@@ -23,12 +22,11 @@ class FavoritesViewModel @Inject constructor(private val repository: Repository)
     private fun getFavoriteCities() {
         startLoading()
         launchCoroutine {
-            val result = repository.getFavorites()
-            Log.d("Favorites", "getFavoriteCities: ${result.size}")
-            if (result.isEmpty())
-                sendEvent(FavoritesEvent.NoFavoritesFoundEvent)
-            else
-                _favorites.value = result
+            repository.getFavorites().collect {
+                if (it.isEmpty())
+                    sendEvent(FavoritesEvent.NoFavoritesFoundEvent)
+                _favorites.emit(it)
+            }
         }
     }
 }

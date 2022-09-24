@@ -14,8 +14,6 @@ class Converters {
 
     private val dayWeatherType = Types.newParameterizedType(List::class.java, DayWeather::class.java)
     private val dayWeatherListAdapter = moshi.adapter<List<DayWeather>>(dayWeatherType)
-    private val weekForecastAdapter = moshi.adapter(WeekForecast::class.java)
-
 
     @TypeConverter
     fun stringToDayWeatherList(value: String): List<DayWeather>? =
@@ -24,13 +22,5 @@ class Converters {
     @TypeConverter
     fun dayWeatherListToString(dayWeatherList: List<DayWeather>): String =
         dayWeatherListAdapter.toJson(dayWeatherList)
-
-    @TypeConverter
-    fun stringToWeekForecast(value: String): WeekForecast? =
-        weekForecastAdapter.fromJson(value)
-
-    @TypeConverter
-    fun weekForecastToString(weekForecast: WeekForecast): String =
-        weekForecastAdapter.toJson(weekForecast)
 
 }

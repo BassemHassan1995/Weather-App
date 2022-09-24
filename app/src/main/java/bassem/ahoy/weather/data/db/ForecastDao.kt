@@ -5,33 +5,22 @@ import androidx.room.*
 import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.data.model.Settings
 import bassem.ahoy.weather.data.model.WeekForecast
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class ForecastDao {
 
-    @Query("SELECT * FROM forecast WHERE isCurrent = 1 LIMIT 1")
-    abstract suspend fun getCurrentForecast(): WeekForecast?
+    //Forecast
+    @Query("SELECT * FROM forecast LIMIT 1")
+    abstract suspend fun getLastKnownLocationForecast(): WeekForecast?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertCurrentForecast(forecast: WeekForecast)
-
-    @Update
-    abstract suspend fun updateCurrentForecast(forecast: WeekForecast)
-
-    suspend fun upsertCurrentForecast(weekForecast: WeekForecast) {
-        try {
-            insertCurrentForecast(weekForecast)
-        } catch (e: SQLiteConstraintException) {
-            updateCurrentForecast(weekForecast)
-        }
-    }
-
-    @Query("UPDATE forecast SET isCurrent = CASE WHEN city = :locationName THEN 1 ELSE 0 END")
-    abstract suspend fun updateCurrentForecast(locationName: String)
+    abstract suspend fun setCurrentLocationForecast(forecast: WeekForecast)
 
     @Delete
     abstract suspend fun deleteForecast(forecast: WeekForecast)
 
+    //Settings
     @Query("SELECT * FROM settings LIMIT 1")
     abstract suspend fun getSettings(): Settings?
 
@@ -49,8 +38,9 @@ abstract class ForecastDao {
         }
     }
 
+    //Favorites
     @Query("SELECT * FROM favorite")
-    abstract suspend fun getFavoriteCities(): List<CityResponse>
+    abstract fun getFavoriteCities(): Flow<List<CityResponse>>
 
     @Query("SELECT EXISTS (SELECT * FROM favorite WHERE id = :cityId LIMIT 1)")
     abstract suspend fun isCityFavorite(cityId: Int): Boolean

@@ -14,16 +14,8 @@ data class WeekForecastResponse(
         val id: Int = 0,
         val name: String = "",
         val timezone: Int = 0,
-    ) {
-        @JsonClass(generateAdapter = true)
-        data class Coord(
-            val lat: Double = 0.0,
-            val lon: Double = 0.0
-        )
-    }
-
+    )
 }
-
 
 @JsonClass(generateAdapter = true)
 data class DayForecast(
@@ -47,6 +39,12 @@ data class DayForecast(
     @JsonClass(generateAdapter = true)
     data class Temperature(val day: Double = 0.0)
 }
+
+@JsonClass(generateAdapter = true)
+data class Coord(
+    val lat: Double = 0.0,
+    val lon: Double = 0.0
+)
 
 @JsonClass(generateAdapter = true)
 data class ApiError(val cod: Int = 200, val message: String? = "")
