@@ -11,13 +11,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.R
 import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.data.model.DayWeather
+import bassem.ahoy.weather.data.model.DegreeUnit
 import bassem.ahoy.weather.data.model.toCityResponse
 import bassem.ahoy.weather.databinding.FragmentWeatherBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
@@ -53,12 +53,12 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
     override fun setupViews() {
         setupPermission()
         with(binding) {
+            recyclerViewWords.adapter = adapter
             swipeRefreshLayout.setOnRefreshListener {
                 swipeRefreshLayout.isRefreshing = false
 
                 viewModel.onRefresh()
             }
-            recyclerViewWords.adapter = adapter
             imageViewFavorites.setOnClickListener {
                 viewModel.updateFavoriteState()
             }
@@ -117,11 +117,16 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
     }
 
     private fun bindFirstDay(first: DayWeather) {
+        val degreeUnitResId = when (first.unit) {
+            DegreeUnit.CELSIUS -> R.string.temperature_c
+            DegreeUnit.FAHRENHEIT -> R.string.temperature_f
+        }
+
         with(binding) {
             header.visibility = View.VISIBLE
             textViewDay.text = first.weekDay
             textViewDate.text = first.date
-            textViewDegree.text = first.temperature
+            textViewDegree.text = getString(degreeUnitResId, first.temperature)
             Glide.with(requireContext())
                 .load(first.iconUrl)
                 .into(imageViewIcon)

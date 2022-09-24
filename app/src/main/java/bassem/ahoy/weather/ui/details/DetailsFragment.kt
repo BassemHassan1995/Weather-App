@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import bassem.ahoy.weather.R
 import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.data.model.DayWeather
+import bassem.ahoy.weather.data.model.DegreeUnit
 import bassem.ahoy.weather.data.model.toCityResponse
 import bassem.ahoy.weather.databinding.FragmentDetailsBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
@@ -53,10 +54,14 @@ class DetailsFragment : BaseFragment<FragmentDetailsBinding, DetailsEvent>() {
 
     private fun bindDay(dayWeather: DayWeather) {
         with(binding) {
+            val degreeUnitResId = when (dayWeather.unit) {
+                DegreeUnit.CELSIUS -> R.string.temperature_c
+                DegreeUnit.FAHRENHEIT -> R.string.temperature_f
+            }
             header.visibility = View.VISIBLE
             textViewDay.text = dayWeather.weekDay
             textViewDate.text = dayWeather.date
-            textViewDegree.text = dayWeather.temperature
+            textViewDegree.text = getString(degreeUnitResId, dayWeather.temperature)
             Glide.with(requireContext())
                 .load(dayWeather.iconUrl)
                 .into(imageViewIcon)

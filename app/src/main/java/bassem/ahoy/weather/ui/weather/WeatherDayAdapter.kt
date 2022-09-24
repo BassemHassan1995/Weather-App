@@ -23,10 +23,14 @@ class WeatherDayAdapter :
 
         fun bind(dayWeather: DayWeather) {
             with(binding) {
-                root.setOnClickListener {
-                    renderCollapsedView(layoutCollapsed, dayWeather)
-                    renderExpandedView(layoutExpanded, dayWeather)
+                layoutCollapsed.root.setOnClickListener {
+                    layoutExpanded.root.visibility = if (layoutExpanded.root.isVisible)
+                        View.GONE
+                    else
+                        View.VISIBLE
                 }
+                renderCollapsedView(layoutCollapsed, dayWeather)
+                renderExpandedView(layoutExpanded, dayWeather)
             }
         }
 
@@ -34,12 +38,6 @@ class WeatherDayAdapter :
             layoutExpanded: ItemExpandedBinding,
             dayWeather: DayWeather
         ) = with(layoutExpanded) {
-            root.visibility =
-                if (root.isVisible)
-                    View.GONE
-                else
-                    View.VISIBLE
-
             textViewSunrise.text = dayWeather.sunrise
             textViewSunset.text = dayWeather.sunset
             textViewHumidity.text = dayWeather.humidity
