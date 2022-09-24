@@ -18,7 +18,7 @@ class FavoritesFragment : BaseFragment<FragmentFavoritesBinding, WeatherEvent>()
     ): FragmentFavoritesBinding =
         FragmentFavoritesBinding.inflate(inflater, container, false)
 
-    override fun observeData(event: WeatherEvent) {
+    override fun handleEvent(event: WeatherEvent) {
     }
 
 }

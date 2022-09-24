@@ -18,6 +18,16 @@ class RepositoryImpl @Inject constructor(
     private val database: AppDatabase
 ) : Repository {
 
+
+    override suspend fun searchCity(query: String): DataResult<List<CityResponse>> = DataResult {
+        val response = apiHelper.searchCity(query)
+
+        when (response.isSuccessful) {
+            true -> response.body().orEmpty()
+            false -> throw Exception(response.getApiError()?.message)
+        }
+    }
+
     override suspend fun getWeekForecast(query: String): DataResult<WeekForecast> = DataResult {
         val response = apiHelper.getWeekForecast(query, getAppSettings().unit.getDegreeFormat())
 

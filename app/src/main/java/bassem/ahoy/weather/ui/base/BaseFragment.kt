@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -42,18 +43,19 @@ abstract class BaseFragment<Binding : ViewBinding, UiEvent : Event> : Fragment()
 
     open fun setupViews(view: View) {}
 
-    private fun observeData() {
+    @CallSuper
+    open fun observeData() {
         with(viewModel)
         {
             viewLifecycleOwner.lifecycleScope.launch {
                 eventsFlow.flowWithLifecycle(lifecycle)
                     .collect {
-                        observeData(it)
+                        handleEvent(it)
                     }
             }
         }
     }
 
-    abstract fun observeData(event: UiEvent)
+    abstract fun handleEvent(event: UiEvent)
 
 }

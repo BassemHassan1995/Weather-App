@@ -1,5 +1,6 @@
 package bassem.ahoy.weather.data.api
 
+import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.data.model.WeekForecastResponse
 import bassem.ahoy.weather.utils.API_KEY
 import bassem.ahoy.weather.utils.IMAGE_BASE_URL
@@ -35,6 +36,15 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         )
     )
 
+    override suspend fun searchCity(city: String): Response<List<CityResponse>> =
+        apiService.searchCity(
+            mapOf(
+                QUERY_CITY to city,
+                QUERY_LIMIT to "5",
+                QUERY_APP_ID to API_KEY
+            )
+        )
+
 }
 
 private const val QUERY_APP_ID = "appid"
@@ -42,3 +52,4 @@ private const val QUERY_CITY = "q"
 private const val QUERY_LONGITUDE = "lon"
 private const val QUERY_LATITUDE = "lat"
 private const val QUERY_UNITS = "units"
+private const val QUERY_LIMIT = "limit"

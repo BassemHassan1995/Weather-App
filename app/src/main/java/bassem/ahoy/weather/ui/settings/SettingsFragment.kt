@@ -18,7 +18,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding, WeatherEvent>() {
     ): FragmentSettingsBinding =
         FragmentSettingsBinding.inflate(inflater, container, false)
 
-    override fun observeData(event: WeatherEvent) {
+    override fun handleEvent(event: WeatherEvent) {
     }
 
 }

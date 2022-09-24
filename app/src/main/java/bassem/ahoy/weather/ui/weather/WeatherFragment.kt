@@ -59,7 +59,9 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
         }
     }
 
-    override fun observeData(event: WeatherEvent) {
+    override fun observeData() {
+        super.observeData()
+
         with(viewModel)
         {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -87,11 +89,12 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
                     }
             }
         }
-        when (event) {
-            WeatherEvent.NoLocationDetectedEvent -> showError(R.string.no_location_detected)
-            WeatherEvent.GetLocationEvent -> checkPermissions()
-            is WeatherEvent.ErrorGettingForecastEvent -> showToast(event.errorMessage)
-        }
+    }
+
+    override fun handleEvent(event: WeatherEvent) = when (event) {
+        WeatherEvent.NoLocationDetectedEvent -> showError(R.string.no_location_detected)
+        WeatherEvent.GetLocationEvent -> checkPermissions()
+        is WeatherEvent.ErrorGettingForecastEvent -> showToast(event.errorMessage)
     }
 
     private fun bindFirstDay(first: DayWeather) {
