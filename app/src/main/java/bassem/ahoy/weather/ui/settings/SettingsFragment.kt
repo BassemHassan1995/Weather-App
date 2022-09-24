@@ -3,15 +3,18 @@ package bassem.ahoy.weather.ui.settings
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import bassem.ahoy.weather.R
 import bassem.ahoy.weather.data.model.DegreeUnit
 import bassem.ahoy.weather.databinding.FragmentSettingsBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
 import bassem.ahoy.weather.ui.base.NoEvent
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingsFragment : BaseFragment<FragmentSettingsBinding, NoEvent>() {
 
-    override val viewModel by activityViewModels<SettingsViewModel>()
+    override val viewModel by viewModels<SettingsViewModel>()
 
     override fun getViewBinding(
         inflater: LayoutInflater,

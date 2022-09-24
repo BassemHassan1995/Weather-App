@@ -6,17 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.databinding.FragmentSearchBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
 import bassem.ahoy.weather.utils.extensions.showToast
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SearchFragment : BaseFragment<FragmentSearchBinding, SearchEvent>() {
 
-    override val viewModel by activityViewModels<SearchViewModel>()
+    override val viewModel by viewModels<SearchViewModel>()
 
     private lateinit var adapter: CityAdapter
 

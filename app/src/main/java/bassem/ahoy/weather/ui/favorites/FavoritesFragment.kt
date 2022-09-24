@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.R
@@ -14,11 +15,13 @@ import bassem.ahoy.weather.databinding.FragmentFavoritesBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
 import bassem.ahoy.weather.ui.search.CityAdapter
 import bassem.ahoy.weather.utils.extensions.showToast
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class FavoritesFragment : BaseFragment<FragmentFavoritesBinding, FavoritesEvent>() {
 
-    override val viewModel by activityViewModels<FavoritesViewModel>()
+    override val viewModel by viewModels<FavoritesViewModel>()
 
     private lateinit var adapter: CityAdapter
 

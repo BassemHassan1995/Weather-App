@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -15,11 +16,13 @@ import bassem.ahoy.weather.databinding.FragmentDetailsBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
 import bassem.ahoy.weather.utils.extensions.showToast
 import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class DetailsFragment : BaseFragment<FragmentDetailsBinding, DetailsEvent>() {
 
-    override val viewModel by activityViewModels<DetailsViewModel>()
+    override val viewModel by viewModels<DetailsViewModel>()
     private val navigationArgs: DetailsFragmentArgs by navArgs()
 
     override fun getViewBinding(

@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.R
@@ -36,7 +37,7 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
 
     private lateinit var adapter: WeatherDayAdapter
 
-    override val viewModel by activityViewModels<WeatherViewModel>()
+    override val viewModel by viewModels<WeatherViewModel>()
 
     override fun getViewBinding(
         inflater: LayoutInflater,
