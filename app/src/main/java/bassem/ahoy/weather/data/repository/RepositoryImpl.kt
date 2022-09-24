@@ -11,7 +11,6 @@ import bassem.ahoy.weather.utils.extensions.getTime
 import bassem.ahoy.weather.utils.extensions.getWeekDay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -44,7 +43,6 @@ class RepositoryImpl @Inject constructor(
                 true -> {
                     val weekForecast = response.body()?.toWeekForecast()
                     weekForecast?.apply {
-                        isFavorite = isCityFavorite(cityId)
                         updateCurrentLocationForecast(this)
                     }!!
                 }
@@ -72,10 +70,12 @@ class RepositoryImpl @Inject constructor(
     override fun getLastKnownLocationForecast(): Flow<WeekForecast?> =
         database.forecastDao().getLastKnownLocationForecast()
 
-    override suspend fun updateCurrentLocationForecast(weekForecast: WeekForecast) =
+    override suspend fun updateCurrentLocationForecast(weekForecast: WeekForecast) {
         withContext(Dispatchers.Default) {
-            database.forecastDao().setCurrentLocationForecast(weekForecast)
+            val result = database.forecastDao().setCurrentLocationForecast(weekForecast)
+            print(result)
         }
+    }
 
 
     private suspend fun getDegreeUnitFromSettings(): DegreeUnit = getDegreeUnit()
@@ -86,19 +86,17 @@ class RepositoryImpl @Inject constructor(
     override suspend fun setDegreeUnit(degreeUnit: DegreeUnit) =
         settingsStore.setUnit(degreeUnit)
 
+
     override suspend fun addCityToFavorites(cityResponse: CityResponse) =
         withContext(Dispatchers.Default) {
             database.forecastDao().insertFavoriteCity(cityResponse)
         }
 
-
     override fun getFavorites(): Flow<List<CityResponse>> =
         database.forecastDao().getFavoriteCities()
 
-    override suspend fun isCityFavorite(cityId: Int): Boolean =
-        withContext(Dispatchers.Default) {
-            database.forecastDao().isCityFavorite(cityId)
-        }
+    override fun isCityFavorite(cityId: Int): Flow<Boolean> =
+        database.forecastDao().isCityFavorite(cityId)
 
     override suspend fun removeCityFromFavorites(cityResponse: CityResponse) =
         withContext(Dispatchers.Default) {
@@ -108,6 +106,8 @@ class RepositoryImpl @Inject constructor(
 
     private suspend fun WeekForecastResponse.toWeekForecast(): WeekForecast =
         WeekForecast(
+            lat = city.coord.lat,
+            lon = city.coord.lon,
             city = city.name,
             weatherDays = list.map { it.toDayWeather() },
             country = city.country,
@@ -116,6 +116,8 @@ class RepositoryImpl @Inject constructor(
 
     private suspend fun WeekForecastResponse.toTodayForecast(): TodayForecast =
         TodayForecast(
+            lat = city.coord.lat,
+            lon = city.coord.lon,
             city = city.name,
             weatherDay = list.map { it.toDayWeather() }.first(),
             country = city.country,

@@ -19,14 +19,11 @@ class FavoritesViewModel @Inject constructor(private val repository: Repository)
         getFavoriteCities()
     }
 
-    private fun getFavoriteCities() {
-        startLoading()
-        launchCoroutine {
-            repository.getFavorites().collect {
-                if (it.isEmpty())
-                    sendEvent(FavoritesEvent.NoFavoritesFoundEvent)
-                _favorites.emit(it)
-            }
+    private fun getFavoriteCities() = launchCoroutine {
+        repository.getFavorites().collect {
+            if (it.isEmpty())
+                sendEvent(FavoritesEvent.NoFavoritesFoundEvent)
+            _favorites.emit(it)
         }
     }
 }

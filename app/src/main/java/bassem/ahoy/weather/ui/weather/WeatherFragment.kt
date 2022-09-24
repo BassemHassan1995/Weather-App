@@ -15,7 +15,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.R
-import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.data.model.DayWeather
 import bassem.ahoy.weather.data.model.DegreeUnit
 import bassem.ahoy.weather.data.model.toCityResponse
@@ -85,8 +84,19 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
                     .collect {
                         it?.let {
                             renderDays(it.weatherDays)
-                            renderCurrentCity(it.toCityResponse())
+                            binding.textViewCity.text = it.toCityResponse().name
                         }
+                    }
+            }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                isFavorite.flowWithLifecycle(lifecycle)
+                    .collect {
+                        val favoriteResId = if (it)
+                            R.drawable.ic_favorite_filled
+                        else
+                            R.drawable.ic_favorite_outlined
+                        binding.imageViewFavorites.setImageResource(favoriteResId)
                     }
             }
         }
@@ -96,18 +106,6 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
         adapter.submitList(dayWeathers)
         if (dayWeathers.isNotEmpty())
             bindFirstDay(dayWeathers.first())
-    }
-
-    private fun renderCurrentCity(cityResponse: CityResponse) {
-        with(binding) {
-            textViewCity.text = cityResponse.name
-            val favoriteResId = if (cityResponse.isFavorite)
-                R.drawable.ic_favorite_filled
-            else
-                R.drawable.ic_favorite_outlined
-            imageViewFavorites.setImageResource(favoriteResId)
-        }
-
     }
 
     override fun handleEvent(event: WeatherEvent) = when (event) {

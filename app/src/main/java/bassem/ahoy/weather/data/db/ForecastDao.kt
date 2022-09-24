@@ -13,7 +13,7 @@ abstract class ForecastDao {
     abstract fun getLastKnownLocationForecast(): Flow<WeekForecast?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun setCurrentLocationForecast(forecast: WeekForecast)
+    abstract suspend fun setCurrentLocationForecast(forecast: WeekForecast):Long
 
     @Delete
     abstract suspend fun deleteForecast(forecast: WeekForecast)
@@ -23,7 +23,7 @@ abstract class ForecastDao {
     abstract fun getFavoriteCities(): Flow<List<CityResponse>>
 
     @Query("SELECT EXISTS (SELECT * FROM favorite WHERE id = :cityId LIMIT 1)")
-    abstract suspend fun isCityFavorite(cityId: Int): Boolean
+    abstract fun isCityFavorite(cityId: Int): Flow<Boolean>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertFavoriteCity(cityResponse: CityResponse)

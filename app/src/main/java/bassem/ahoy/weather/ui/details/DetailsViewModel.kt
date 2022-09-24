@@ -17,6 +17,9 @@ class DetailsViewModel @Inject constructor(private val repository: Repository) :
     private val _todayWeather: MutableStateFlow<TodayForecast?> = MutableStateFlow(null)
     val todayWeather: StateFlow<TodayForecast?> = _todayWeather
 
+    private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite
+
     fun getDayWeatherDetails(latitude: Double, longitude: Double) {
         startLoading()
         launchCoroutine {
@@ -33,23 +36,30 @@ class DetailsViewModel @Inject constructor(private val repository: Repository) :
             }
             is DataResult.Success -> with(result.value) {
                 _todayWeather.value = this
+                checkIsFavorite(this.cityId)
             }
         }.also {
             endLoading()
         }
     }
 
-    fun updateFavoriteState() {
-        _todayWeather.value?.let {
-            launchCoroutine {
-                if (it.isFavorite)
-                    repository.removeCityFromFavorites(it.toCityResponse())
-                else
-                    repository.addCityToFavorites(it.toCityResponse())
-                _todayWeather.value = it.copy(isFavorite = it.isFavorite.not())
+    private fun checkIsFavorite(cityId: Int) {
+        launchCoroutine {
+            repository.isCityFavorite(cityId).collect {
+                _isFavorite.value = it
             }
         }
     }
 
+    fun updateFavoriteState() {
+        launchCoroutine {
+            _todayWeather.value?.let {
+                if (_isFavorite.value)
+                    repository.removeCityFromFavorites(it.toCityResponse())
+                else
+                    repository.addCityToFavorites(it.toCityResponse())
+            }
+        }
+    }
 
 }

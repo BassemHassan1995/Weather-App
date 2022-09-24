@@ -3,7 +3,6 @@ package bassem.ahoy.weather.ui.details
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -45,8 +44,19 @@ class DetailsFragment : BaseFragment<FragmentDetailsBinding, DetailsEvent>() {
                     .collect {
                         it?.let {
                             bindDay(it.weatherDay)
-                            bindCity(it.toCityResponse())
+                            binding.textViewCity.text = it.toCityResponse().name
                         }
+                    }
+            }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                isFavorite.flowWithLifecycle(lifecycle)
+                    .collect {
+                        val favoriteResId = if (it)
+                            R.drawable.ic_favorite_filled
+                        else
+                            R.drawable.ic_favorite_outlined
+                        binding.imageViewFavorites.setImageResource(favoriteResId)
                     }
             }
         }
@@ -65,17 +75,6 @@ class DetailsFragment : BaseFragment<FragmentDetailsBinding, DetailsEvent>() {
             Glide.with(requireContext())
                 .load(dayWeather.iconUrl)
                 .into(imageViewIcon)
-        }
-    }
-
-    private fun bindCity(cityResponse: CityResponse) {
-        with(binding) {
-            textViewCity.text = cityResponse.name
-            val favoriteResId = if (cityResponse.isFavorite)
-                R.drawable.ic_favorite_filled
-            else
-                R.drawable.ic_favorite_outlined
-            imageViewFavorites.setImageResource(favoriteResId)
         }
     }
 

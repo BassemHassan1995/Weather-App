@@ -11,8 +11,7 @@ data class CityResponse(
     val name: String,
     val lat: Double,
     val lon: Double,
-    val country: String,
-    val isFavorite : Boolean = false
+    val country: String
 )
 
 fun CityResponse.getFullName() : String{

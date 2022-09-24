@@ -23,6 +23,9 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     private val _currentForecast: MutableStateFlow<WeekForecast?> = MutableStateFlow(null)
     val currentForecast: StateFlow<WeekForecast?> = _currentForecast
 
+    private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite
+
     init {
         getLastKnownLocation()
         checkCurrentLocation()
@@ -55,9 +58,18 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
             }
             is DataResult.Success -> with(result.value) {
                 _currentForecast.value = this
+                checkIsFavorite(this.cityId)
             }
         }.also {
             endLoading()
+        }
+    }
+
+    private fun checkIsFavorite(cityId: Int) {
+        launchCoroutine {
+            repository.isCityFavorite(cityId).collect {
+                _isFavorite.value = it
+            }
         }
     }
 
@@ -78,11 +90,10 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     fun updateFavoriteState() {
         _currentForecast.value?.let {
             launchCoroutine {
-                if (it.isFavorite)
+                if (_isFavorite.value)
                     repository.removeCityFromFavorites(it.toCityResponse())
                 else
                     repository.addCityToFavorites(it.toCityResponse())
-                _currentForecast.value = it.copy(isFavorite = it.isFavorite.not())
             }
         }
     }

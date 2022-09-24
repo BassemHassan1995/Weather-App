@@ -16,7 +16,7 @@ interface Repository {
     suspend fun setDegreeUnit(degreeUnit: DegreeUnit)
 
     fun getFavorites(): Flow<List<CityResponse>>
-    suspend fun isCityFavorite(cityId: Int): Boolean
+    fun isCityFavorite(cityId: Int): Flow<Boolean>
     suspend fun addCityToFavorites(cityResponse: CityResponse)
     suspend fun removeCityFromFavorites(cityResponse: CityResponse)
 }

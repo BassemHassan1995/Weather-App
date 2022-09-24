@@ -11,8 +11,7 @@ data class WeekForecast(
     val country: String,
     val weatherDays: List<DayWeather>,
     val lat: Double = 0.0,
-    val lon: Double = 0.0,
-    var isFavorite: Boolean = false
+    val lon: Double = 0.0
 )
 
 data class TodayForecast(
@@ -22,8 +21,7 @@ data class TodayForecast(
     val country: String,
     val weatherDay: DayWeather,
     val lat: Double = 0.0,
-    val lon: Double = 0.0,
-    var isFavorite: Boolean = false
+    val lon: Double = 0.0
 )
 
 fun WeekForecast.toCityResponse(): CityResponse =
@@ -32,8 +30,7 @@ fun WeekForecast.toCityResponse(): CityResponse =
         name = city,
         lat = lat,
         lon = lon,
-        country = country,
-        isFavorite = isFavorite
+        country = country
     )
 
 fun TodayForecast.toCityResponse(): CityResponse =
@@ -42,6 +39,5 @@ fun TodayForecast.toCityResponse(): CityResponse =
         name = city,
         lat = lat,
         lon = lon,
-        country = country,
-        isFavorite = isFavorite
+        country = country
     )
