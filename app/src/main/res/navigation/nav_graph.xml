@@ -7,21 +7,25 @@
 
     <fragment
         android:id="@+id/weather"
+        android:label="@string/action_weather"
         android:name="bassem.ahoy.weather.ui.weather.WeatherFragment"
         tools:layout="@layout/fragment_weather" />
 
     <fragment
         android:id="@+id/settings"
+        android:label="@string/action_settings"
         android:name="bassem.ahoy.weather.ui.settings.SettingsFragment"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/search"
+        android:label="@string/action_search"
         android:name="bassem.ahoy.weather.ui.search.SearchFragment"
         tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/favorites"
+        android:label="@string/action_favorites"
         android:name="bassem.ahoy.weather.ui.favorites.FavoritesFragment"
         tools:layout="@layout/fragment_favorites" />
 
