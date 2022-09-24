@@ -2,8 +2,10 @@ package bassem.ahoy.weather.ui.weather
 
 import android.location.Location
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.data.model.DayWeather
 import bassem.ahoy.weather.data.model.WeekForecast
+import bassem.ahoy.weather.data.model.toCityResponse
 import bassem.ahoy.weather.data.repository.Repository
 import bassem.ahoy.weather.ui.base.BaseViewModel
 import bassem.ahoy.weather.utils.DataResult
@@ -18,16 +20,11 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     BaseViewModel<WeatherEvent>(), OnSuccessListener<Location?>,
     SwipeRefreshLayout.OnRefreshListener {
 
-    private val noLocationDetected = "No Location Detected"
-
     private val _weatherDays: MutableStateFlow<List<DayWeather>> = MutableStateFlow(emptyList())
     val weatherDays: StateFlow<List<DayWeather>> = _weatherDays
 
-    private val _currentDay: MutableStateFlow<DayWeather> = MutableStateFlow(DayWeather())
-    val currentDay: StateFlow<DayWeather> = _currentDay
-
-    private val _city: MutableStateFlow<String> = MutableStateFlow(noLocationDetected)
-    val city: StateFlow<String> = _city
+    private val _currentCity: MutableStateFlow<CityResponse?> = MutableStateFlow(null)
+    val currentCity: StateFlow<CityResponse?> = _currentCity
 
     init {
         checkCurrentLocation()
@@ -54,7 +51,7 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
             }
             is DataResult.Success -> with(result.value) {
                 _weatherDays.value = weatherDays
-                _city.value = city
+                _currentCity.value = toCityResponse()
             }
         }.also {
             endLoading()
@@ -72,8 +69,26 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     }
 
     override fun onRefresh() {
-        if (city.value != noLocationDetected)
-            getData(city.value)
+        _currentCity.value?.let {
+            getData(it.name)
+        }
+    }
+
+    fun updateFavoriteState() {
+        _currentCity.value?.let {
+            launchCoroutine {
+                if (it.isFavorite)
+                {
+                    repository.removeCityFromFavorites(it)
+                    _currentCity.value = it.copy(isFavorite = false)
+                }
+                else
+                {
+                    repository.addCityToFavorites(it)
+                    _currentCity.value = it.copy(isFavorite = true)
+                }
+            }
+        }
     }
 
 }

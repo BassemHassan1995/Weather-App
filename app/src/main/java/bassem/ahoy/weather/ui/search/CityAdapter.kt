@@ -8,16 +8,18 @@ import androidx.recyclerview.widget.RecyclerView
 import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.databinding.SearchItemBinding
 
-class SearchAdapter :
-    ListAdapter<CityResponse, SearchAdapter.ViewHolder>(DiffCallback) {
+class CityAdapter(private val onItemClicked: (CityResponse) -> Unit = {}) :
+    ListAdapter<CityResponse, CityAdapter.ViewHolder>(DiffCallback) {
 
     class ViewHolder(private var binding: SearchItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(cityResponse: CityResponse) {
-            binding.tvCityName.text = "${cityResponse.name}, ${cityResponse.country}"
+        fun bind(cityResponse: CityResponse, onItemClicked: (CityResponse) -> Unit) {
+            with(binding) {
+                root.setOnClickListener { onItemClicked(cityResponse) }
+                tvCityName.text = "${cityResponse.name}, ${cityResponse.country}"
+            }
         }
-
     }
 
     override fun onCreateViewHolder(
@@ -34,7 +36,7 @@ class SearchAdapter :
         )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onItemClicked)
 
     companion object DiffCallback : DiffUtil.ItemCallback<CityResponse>() {
         override fun areItemsTheSame(

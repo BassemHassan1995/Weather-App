@@ -17,7 +17,7 @@ interface Repository {
     suspend fun updateDegreeUnit(degreeUnit: DegreeUnit)
     suspend fun upsertAppSettings(settings: Settings)
 
-    suspend fun addForecastToFavorites(weekForecast: WeekForecast)
-    suspend fun getFavorites(weekForecast: WeekForecast): List<WeekForecast>
-    suspend fun updateForecast(weekForecast: WeekForecast)
+    suspend fun getFavorites(): List<CityResponse>
+    suspend fun addCityToFavorites(cityResponse: CityResponse)
+    suspend fun removeCityFromFavorites(cityResponse: CityResponse)
 }

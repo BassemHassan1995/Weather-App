@@ -16,4 +16,5 @@
     <string name="sunset">SUNSET</string>
     <string name="sunrise">SUNRISE</string>
     <string name="temperature">TEMPERATURE</string>
+    <string name="no_favorites_found">No Favorites Found</string>
 </resources>

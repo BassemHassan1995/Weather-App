@@ -14,7 +14,7 @@
     <item
         android:id="@+id/favorites"
         android:contentDescription="@string/action_favorites"
-        android:icon="@drawable/ic_favorite"
+        android:icon="@drawable/ic_favorite_outlined"
         android:title="@string/action_favorites" />
     <item
         android:id="@+id/settings"

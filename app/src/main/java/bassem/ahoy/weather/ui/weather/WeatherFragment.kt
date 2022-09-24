@@ -56,6 +56,9 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
                 viewModel.onRefresh()
             }
             recyclerViewWords.adapter = adapter
+            imageViewFavorites.setOnClickListener {
+                viewModel.updateFavoriteState()
+            }
         }
     }
 
@@ -83,9 +86,18 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
                     }
             }
             viewLifecycleOwner.lifecycleScope.launch {
-                city.flowWithLifecycle(lifecycle)
+                currentCity.flowWithLifecycle(lifecycle)
                     .collect {
-                        binding.textViewCity.text = it
+                        with(binding) {
+                            textViewCity.text = it?.name ?: getString(R.string.no_location_detected)
+                            it?.let {
+                                val favoriteResId = if (it.isFavorite)
+                                    R.drawable.ic_favorite_filled
+                                else
+                                    R.drawable.ic_favorite_outlined
+                                imageViewFavorites.setImageResource(favoriteResId)
+                            }
+                        }
                     }
             }
         }

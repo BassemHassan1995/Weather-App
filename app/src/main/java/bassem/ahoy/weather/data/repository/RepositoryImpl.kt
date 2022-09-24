@@ -1,6 +1,7 @@
 package bassem.ahoy.weather.data.repository
 
 import android.location.Location
+import android.util.Log
 import bassem.ahoy.weather.data.api.ApiHelper
 import bassem.ahoy.weather.data.db.AppDatabase
 import bassem.ahoy.weather.data.model.*
@@ -17,7 +18,6 @@ class RepositoryImpl @Inject constructor(
     private val apiHelper: ApiHelper,
     private val database: AppDatabase
 ) : Repository {
-
 
     override suspend fun searchCity(query: String): DataResult<List<CityResponse>> = DataResult {
         val response = apiHelper.searchCity(query)
@@ -72,23 +72,32 @@ class RepositoryImpl @Inject constructor(
             database.forecastDao().upsertSettings(settings)
         }
 
-    override suspend fun addForecastToFavorites(weekForecast: WeekForecast) =
+    override suspend fun addCityToFavorites(cityResponse: CityResponse) =
         withContext(Dispatchers.Default) {
-            database.forecastDao().insertForecast(weekForecast)
+            val result = database.forecastDao().insertFavoriteCity(cityResponse)
+            Log.d("Favorites", "addCityToFavorites: $result")
+
+            Unit
         }
 
-    override suspend fun getFavorites(weekForecast: WeekForecast): List<WeekForecast> =
+    override suspend fun getFavorites(): List<CityResponse> =
         withContext(Dispatchers.Default) {
-            database.forecastDao().getFavoriteForecasts()
+            val result = database.forecastDao().getFavoriteCities()
+
+            result
         }
 
-    override suspend fun updateForecast(weekForecast: WeekForecast) =
+    override suspend fun removeCityFromFavorites(cityResponse: CityResponse) =
         withContext(Dispatchers.Default) {
-            database.forecastDao().updateForecast(weekForecast)
+            database.forecastDao().deleteFavoriteCity(cityResponse)
         }
 
     private suspend fun WeekForecastResponse.toWeekForecast(): WeekForecast =
-        WeekForecast(city = city.name, weatherDays = list.map { it.toDayWeather() })
+        WeekForecast(
+            city = city.name,
+            weatherDays = list.map { it.toDayWeather() },
+            country = city.country
+        )
 
     private suspend fun DayForecast.toDayWeather(): DayWeather =
         DayWeather(

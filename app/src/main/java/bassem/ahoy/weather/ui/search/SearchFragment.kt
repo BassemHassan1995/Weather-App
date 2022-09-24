@@ -8,6 +8,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.databinding.FragmentSearchBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
 import bassem.ahoy.weather.utils.extensions.showToast
@@ -17,11 +18,18 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, SearchEvent>() {
 
     override val viewModel by activityViewModels<SearchViewModel>()
 
-    private lateinit var adapter: SearchAdapter
+    private lateinit var adapter: CityAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = SearchAdapter()
+        adapter = CityAdapter {
+            openCityDetails(it)
+        }
+    }
+
+    private fun openCityDetails(city: CityResponse) {
+        showToast("Open ${city.name}")
+        //TODO: Open weather data
     }
 
     override fun getViewBinding(
@@ -52,6 +60,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, SearchEvent>() {
             }
         }
     }
+
     override fun handleEvent(event: SearchEvent) = when (event) {
         is SearchEvent.ErrorGettingResult -> showToast(event.errorMessage)
     }
