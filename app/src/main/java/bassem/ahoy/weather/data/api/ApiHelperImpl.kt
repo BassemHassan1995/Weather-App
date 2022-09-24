@@ -12,18 +12,6 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override fun getIconUrl(iconId: String): String = "${IMAGE_BASE_URL}img/wn/$iconId@4x.png"
 
     override suspend fun getWeekForecast(
-        city: String,
-        unit: String
-    ): Response<WeekForecastResponse> =
-        apiService.getWeekForecast(
-            mapOf(
-                QUERY_CITY to city,
-                QUERY_UNITS to unit,
-                QUERY_APP_ID to API_KEY
-            )
-        )
-
-    override suspend fun getWeekForecast(
         longitude: Double,
         latitude: Double,
         unit: String

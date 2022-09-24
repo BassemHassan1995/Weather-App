@@ -1,7 +1,5 @@
 package bassem.ahoy.weather.data.repository
 
-import android.location.Location
-import android.util.Log
 import bassem.ahoy.weather.data.api.ApiHelper
 import bassem.ahoy.weather.data.db.AppDatabase
 import bassem.ahoy.weather.data.model.*
@@ -29,25 +27,6 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getWeekForecast(location: Location): DataResult<WeekForecast> =
-        DataResult {
-            val response = apiHelper.getWeekForecast(
-                location.longitude,
-                location.latitude,
-                getAppSettings().unit.getDegreeFormat()
-            )
-            when (response.isSuccessful) {
-                true -> {
-                    val weekForecast = response.body()?.toWeekForecast()
-                    weekForecast?.apply {
-                        val test = isCityFavorite(cityId)
-                        isFavorite = test
-                    }!!
-                }
-                false -> throw Exception(response.errorBody().toString())
-            }
-        }
-
     override suspend fun getWeekForecast(
         latitude: Double,
         longitude: Double
@@ -62,13 +41,39 @@ class RepositoryImpl @Inject constructor(
                 true -> {
                     val weekForecast = response.body()?.toWeekForecast()
                     weekForecast?.apply {
-                        val test = isCityFavorite(cityId)
-                        isFavorite = test
+                        isFavorite = isCityFavorite(cityId)
+                        updateCurrentLocationForecast(this)
                     }!!
                 }
                 false -> throw Exception(response.errorBody().toString())
             }
         }
+
+    override suspend fun getTodayForecast(
+        latitude: Double,
+        longitude: Double
+    ): DataResult<TodayForecast> =
+        DataResult {
+            val response = apiHelper.getWeekForecast(
+                longitude,
+                latitude,
+                getAppSettings().unit.getDegreeFormat()
+            )
+            when (response.isSuccessful) {
+                true -> response.body()?.toTodayForecast()!!
+                false -> throw Exception(response.errorBody().toString())
+            }
+        }
+
+
+    override fun getLastKnownLocationForecast(): Flow<WeekForecast?> =
+        database.forecastDao().getLastKnownLocationForecast()
+
+    override suspend fun updateCurrentLocationForecast(weekForecast: WeekForecast) =
+        withContext(Dispatchers.Default) {
+            database.forecastDao().setCurrentLocationForecast(weekForecast)
+        }
+
 
     private suspend fun getDegreeUnitFromSettings(): DegreeUnit = getAppSettings().unit
 
@@ -93,11 +98,9 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun addCityToFavorites(cityResponse: CityResponse) =
         withContext(Dispatchers.Default) {
-            val result = database.forecastDao().insertFavoriteCity(cityResponse)
-            Log.d("Favorites", "addCityToFavorites: $result")
-
-            Unit
+            database.forecastDao().insertFavoriteCity(cityResponse)
         }
+
 
     override fun getFavorites(): Flow<List<CityResponse>> =
         database.forecastDao().getFavoriteCities()
@@ -112,10 +115,19 @@ class RepositoryImpl @Inject constructor(
             database.forecastDao().deleteFavoriteCity(cityResponse)
         }
 
+
     private suspend fun WeekForecastResponse.toWeekForecast(): WeekForecast =
         WeekForecast(
             city = city.name,
             weatherDays = list.map { it.toDayWeather() },
+            country = city.country,
+            cityId = city.id
+        )
+
+    private suspend fun WeekForecastResponse.toTodayForecast(): TodayForecast =
+        TodayForecast(
+            city = city.name,
+            weatherDay = list.map { it.toDayWeather() }.first(),
             country = city.country,
             cityId = city.id
         )

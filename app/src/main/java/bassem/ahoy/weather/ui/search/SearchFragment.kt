@@ -29,7 +29,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, SearchEvent>() {
 
     private fun openCityDetails(city: CityResponse) =
         navigateTo(
-            SearchFragmentDirections.actionSearchToWeather(
+            SearchFragmentDirections.actionSearchToDetails(
                 city.lat.toFloat(),
                 city.lon.toFloat()
             )

@@ -8,8 +8,6 @@ interface ApiHelper {
 
     fun getIconUrl(iconId: String): String
 
-    suspend fun getWeekForecast(city: String, unit: String): Response<WeekForecastResponse>
-
     suspend fun getWeekForecast(
         longitude: Double,
         latitude: Double,

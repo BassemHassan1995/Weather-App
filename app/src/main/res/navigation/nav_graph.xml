@@ -9,16 +9,7 @@
         android:id="@+id/weather"
         android:name="bassem.ahoy.weather.ui.weather.WeatherFragment"
         android:label="@string/action_weather"
-        tools:layout="@layout/fragment_weather">
-
-        <argument
-            android:name="latitude"
-            app:argType="float" />
-        <argument
-            android:name="longitude"
-            app:argType="float" />
-
-    </fragment>
+        tools:layout="@layout/fragment_weather" />
 
     <fragment
         android:id="@+id/settings"
@@ -32,8 +23,8 @@
         android:label="@string/action_search"
         tools:layout="@layout/fragment_search">
         <action
-            android:id="@+id/action_search_to_weather"
-            app:destination="@id/weather" />
+            android:id="@+id/action_search_to_details"
+            app:destination="@id/details" />
     </fragment>
 
     <fragment
@@ -42,8 +33,21 @@
         android:label="@string/action_favorites"
         tools:layout="@layout/fragment_favorites">
         <action
-            android:id="@+id/action_favorites_to_weather"
-            app:destination="@id/weather" />
+            android:id="@+id/action_favorites_to_details"
+            app:destination="@id/details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/details"
+        android:name="bassem.ahoy.weather.ui.details.DetailsFragment"
+        android:label="@string/action_details"
+        tools:layout="@layout/fragment_details">
+        <argument
+            android:name="latitude"
+            app:argType="float" />
+        <argument
+            android:name="longitude"
+            app:argType="float" />
     </fragment>
 
 </navigation>

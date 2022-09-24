@@ -2,7 +2,9 @@ package bassem.ahoy.weather.ui.weather
 
 import android.location.Location
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import bassem.ahoy.weather.data.model.*
+import bassem.ahoy.weather.data.model.Coord
+import bassem.ahoy.weather.data.model.WeekForecast
+import bassem.ahoy.weather.data.model.toCityResponse
 import bassem.ahoy.weather.data.repository.Repository
 import bassem.ahoy.weather.ui.base.BaseViewModel
 import bassem.ahoy.weather.utils.DataResult
@@ -18,16 +20,20 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     BaseViewModel<WeatherEvent>(), OnSuccessListener<Location?>,
     SwipeRefreshLayout.OnRefreshListener {
 
-    private val _weatherDays: MutableStateFlow<List<DayWeather>> = MutableStateFlow(emptyList())
-    val weatherDays: StateFlow<List<DayWeather>> = _weatherDays
-
-    private val _currentCity: MutableStateFlow<CityResponse?> = MutableStateFlow(null)
-    val currentCity: StateFlow<CityResponse?> = _currentCity
-
-    private var currentLocation: Coord? = null
+    private val _currentForecast: MutableStateFlow<WeekForecast?> = MutableStateFlow(null)
+    val currentForecast: StateFlow<WeekForecast?> = _currentForecast
 
     init {
+        getLastKnownLocation()
         checkCurrentLocation()
+    }
+
+    private fun getLastKnownLocation() {
+        launchCoroutine {
+            repository.getLastKnownLocationForecast().collect {
+                _currentForecast.emit(it)
+            }
+        }
     }
 
     private fun getData(coord: Coord) {
@@ -48,8 +54,7 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
                 sendEvent(WeatherEvent.ErrorGettingForecastEvent(it))
             }
             is DataResult.Success -> with(result.value) {
-                _weatherDays.value = weatherDays
-                _currentCity.value = toCityResponse()
+                _currentForecast.value = this
             }
         }.also {
             endLoading()
@@ -63,26 +68,21 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
             sendEvent(WeatherEvent.NoLocationDetectedEvent)
         } else {
             getData(location.toCoord())
-            currentLocation = location.toCoord()
         }
     }
 
     override fun onRefresh() {
-        currentLocation?.let {
-            getData(it)
-        }
+        checkCurrentLocation()
     }
 
     fun updateFavoriteState() {
-        _currentCity.value?.let {
+        _currentForecast.value?.let {
             launchCoroutine {
-                if (it.isFavorite) {
-                    repository.removeCityFromFavorites(it)
-                    _currentCity.value = it.copy(isFavorite = false)
-                } else {
-                    repository.addCityToFavorites(it)
-                    _currentCity.value = it.copy(isFavorite = true)
-                }
+                if (it.isFavorite)
+                    repository.removeCityFromFavorites(it.toCityResponse())
+                else
+                    repository.addCityToFavorites(it.toCityResponse())
+                _currentForecast.value = it.copy(isFavorite = it.isFavorite.not())
             }
         }
     }

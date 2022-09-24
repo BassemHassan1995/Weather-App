@@ -12,7 +12,7 @@ abstract class ForecastDao {
 
     //Forecast
     @Query("SELECT * FROM forecast LIMIT 1")
-    abstract suspend fun getLastKnownLocationForecast(): WeekForecast?
+    abstract fun getLastKnownLocationForecast(): Flow<WeekForecast?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun setCurrentLocationForecast(forecast: WeekForecast)
@@ -46,7 +46,7 @@ abstract class ForecastDao {
     abstract suspend fun isCityFavorite(cityId: Int): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertFavoriteCity(cityResponse: CityResponse): Long
+    abstract suspend fun insertFavoriteCity(cityResponse: CityResponse)
 
     @Delete
     abstract suspend fun deleteFavoriteCity(cityResponse: CityResponse)

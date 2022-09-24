@@ -30,7 +30,7 @@ class FavoritesFragment : BaseFragment<FragmentFavoritesBinding, FavoritesEvent>
     }
 
     private fun openWeatherDetails(cityResponse: CityResponse) =
-        navigateTo(FavoritesFragmentDirections.actionFavoritesToWeather(cityResponse.lat.toFloat(),
+        navigateTo(FavoritesFragmentDirections.actionFavoritesToDetails(cityResponse.lat.toFloat(),
             cityResponse.lon.toFloat()
         ))
 

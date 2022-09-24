@@ -15,7 +15,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import bassem.ahoy.weather.R
+import bassem.ahoy.weather.data.model.CityResponse
 import bassem.ahoy.weather.data.model.DayWeather
+import bassem.ahoy.weather.data.model.toCityResponse
 import bassem.ahoy.weather.databinding.FragmentWeatherBinding
 import bassem.ahoy.weather.ui.base.BaseFragment
 import bassem.ahoy.weather.utils.extensions.showSnackbar
@@ -78,29 +80,33 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
 
             }
             viewLifecycleOwner.lifecycleScope.launch {
-                weatherDays.flowWithLifecycle(lifecycle)
+                currentForecast.flowWithLifecycle(lifecycle)
                     .collect {
-                        adapter.submitList(it)
-                        if (it.isNotEmpty())
-                            bindFirstDay(it.first())
-                    }
-            }
-            viewLifecycleOwner.lifecycleScope.launch {
-                currentCity.flowWithLifecycle(lifecycle)
-                    .collect {
-                        with(binding) {
-                            textViewCity.text = it?.name ?: getString(R.string.no_location_detected)
-                            it?.let {
-                                val favoriteResId = if (it.isFavorite)
-                                    R.drawable.ic_favorite_filled
-                                else
-                                    R.drawable.ic_favorite_outlined
-                                imageViewFavorites.setImageResource(favoriteResId)
-                            }
+                        it?.let {
+                            renderDays(it.weatherDays)
+                            renderCurrentCity(it.toCityResponse())
                         }
                     }
             }
         }
+    }
+
+    private fun renderDays(dayWeathers: List<DayWeather>) {
+        adapter.submitList(dayWeathers)
+        if (dayWeathers.isNotEmpty())
+            bindFirstDay(dayWeathers.first())
+    }
+
+    private fun renderCurrentCity(cityResponse: CityResponse) {
+        with(binding) {
+            textViewCity.text = cityResponse.name
+            val favoriteResId = if (cityResponse.isFavorite)
+                R.drawable.ic_favorite_filled
+            else
+                R.drawable.ic_favorite_outlined
+            imageViewFavorites.setImageResource(favoriteResId)
+        }
+
     }
 
     override fun handleEvent(event: WeatherEvent) = when (event) {
@@ -145,7 +151,7 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED ->
-                getLastKnownLocation()
+                getCurrentLocation()
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
                 binding.progressBar.visibility = View.GONE
                 showSnackbar(R.string.permission_rationale) { requestPermission() }
@@ -160,7 +166,7 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
         requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
 
     @SuppressLint("MissingPermission")
-    private fun getLastKnownLocation() {
+    private fun getCurrentLocation() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener(viewModel)
     }
