@@ -70,22 +70,16 @@ class RepositoryImpl @Inject constructor(
     override fun getLastKnownLocationForecast(): Flow<WeekForecast?> =
         database.forecastDao().getLastKnownLocationForecast()
 
-    override suspend fun updateCurrentLocationForecast(weekForecast: WeekForecast) {
+    override suspend fun updateCurrentLocationForecast(weekForecast: WeekForecast) =
         withContext(Dispatchers.Default) {
-            val result = database.forecastDao().setCurrentLocationForecast(weekForecast)
-            print(result)
+            database.forecastDao().setCurrentLocationForecast(weekForecast)
         }
-    }
-
-
-    private suspend fun getDegreeUnitFromSettings(): DegreeUnit = getDegreeUnit()
 
     override suspend fun getDegreeUnit(): DegreeUnit =
         settingsStore.getUnit()
 
     override suspend fun setDegreeUnit(degreeUnit: DegreeUnit) =
         settingsStore.setUnit(degreeUnit)
-
 
     override suspend fun addCityToFavorites(cityResponse: CityResponse) =
         withContext(Dispatchers.Default) {
@@ -135,6 +129,6 @@ class RepositoryImpl @Inject constructor(
             humidity = humidity.toString(),
             windSpeed = "s $speed mph",
             iconUrl = apiHelper.getIconUrl(weather[0].icon),
-            unit = getDegreeUnitFromSettings()
+            unit = getDegreeUnit()
         )
 }

@@ -13,10 +13,7 @@ abstract class ForecastDao {
     abstract fun getLastKnownLocationForecast(): Flow<WeekForecast?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun setCurrentLocationForecast(forecast: WeekForecast):Long
-
-    @Delete
-    abstract suspend fun deleteForecast(forecast: WeekForecast)
+    abstract suspend fun setCurrentLocationForecast(forecast: WeekForecast)
 
     //Favorites
     @Query("SELECT * FROM favorite")
