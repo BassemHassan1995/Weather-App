@@ -52,7 +52,10 @@ abstract class ForecastDao {
     @Query("SELECT * FROM favorite")
     abstract suspend fun getFavoriteCities(): List<CityResponse>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Query("SELECT EXISTS (SELECT * FROM favorite WHERE id = :cityId LIMIT 1)")
+    abstract suspend fun isCityFavorite(cityId: Int): Boolean
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertFavoriteCity(cityResponse: CityResponse): Long
 
     @Delete

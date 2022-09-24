@@ -5,15 +5,23 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "forecast")
 data class WeekForecast(
-    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    @PrimaryKey(autoGenerate = false) var id: Int = 0,
     val city: String,
+    val cityId: Int,
     val country: String,
     val weatherDays: List<DayWeather>,
     val lat: String = "",
     val lon: String = "",
-    val isFavorite: Boolean = false,
+    var isFavorite: Boolean = false,
     val isCurrent: Boolean = true
 )
 
 fun WeekForecast.toCityResponse(): CityResponse =
-    CityResponse(name = city, lat = lat, lon = lon, country = country)
+    CityResponse(
+        id = cityId,
+        name = city,
+        lat = lat,
+        lon = lon,
+        country = country,
+        isFavorite = isFavorite
+    )

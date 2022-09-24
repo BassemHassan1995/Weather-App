@@ -28,15 +28,6 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getWeekForecast(query: String): DataResult<WeekForecast> = DataResult {
-        val response = apiHelper.getWeekForecast(query, getAppSettings().unit.getDegreeFormat())
-
-        when (response.isSuccessful) {
-            true -> response.body()?.toWeekForecast()!!
-            false -> throw Exception(response.getApiError()?.message)
-        }
-    }
-
     override suspend fun getWeekForecast(location: Location): DataResult<WeekForecast> =
         DataResult {
             val response = apiHelper.getWeekForecast(
@@ -44,9 +35,14 @@ class RepositoryImpl @Inject constructor(
                 location.latitude,
                 getAppSettings().unit.getDegreeFormat()
             )
-
             when (response.isSuccessful) {
-                true -> response.body()?.toWeekForecast()!!
+                true -> {
+                    val weekForecast = response.body()?.toWeekForecast()
+                    weekForecast?.apply {
+                        val test = isCityFavorite(cityId)
+                        isFavorite = test
+                    }!!
+                }
                 false -> throw Exception(response.errorBody().toString())
             }
         }
@@ -82,9 +78,12 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun getFavorites(): List<CityResponse> =
         withContext(Dispatchers.Default) {
-            val result = database.forecastDao().getFavoriteCities()
+            database.forecastDao().getFavoriteCities()
+        }
 
-            result
+    override suspend fun isCityFavorite(cityId: Int): Boolean =
+        withContext(Dispatchers.Default) {
+            database.forecastDao().isCityFavorite(cityId)
         }
 
     override suspend fun removeCityFromFavorites(cityResponse: CityResponse) =
@@ -96,7 +95,8 @@ class RepositoryImpl @Inject constructor(
         WeekForecast(
             city = city.name,
             weatherDays = list.map { it.toDayWeather() },
-            country = city.country
+            country = city.country,
+            cityId = city.id
         )
 
     private suspend fun DayForecast.toDayWeather(): DayWeather =

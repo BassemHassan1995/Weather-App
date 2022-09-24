@@ -9,7 +9,6 @@ import bassem.ahoy.weather.utils.DataResult
 
 interface Repository {
 
-    suspend fun getWeekForecast(query: String): DataResult<WeekForecast>
     suspend fun searchCity(query: String): DataResult<List<CityResponse>>
     suspend fun getWeekForecast(location: Location): DataResult<WeekForecast>
 
@@ -18,6 +17,7 @@ interface Repository {
     suspend fun upsertAppSettings(settings: Settings)
 
     suspend fun getFavorites(): List<CityResponse>
+    suspend fun isCityFavorite(cityId: Int) : Boolean
     suspend fun addCityToFavorites(cityResponse: CityResponse)
     suspend fun removeCityFromFavorites(cityResponse: CityResponse)
 }

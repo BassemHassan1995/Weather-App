@@ -26,6 +26,8 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     private val _currentCity: MutableStateFlow<CityResponse?> = MutableStateFlow(null)
     val currentCity: StateFlow<CityResponse?> = _currentCity
 
+    private var currentLocation: Location? = null
+
     init {
         checkCurrentLocation()
     }
@@ -34,13 +36,6 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
         startLoading()
         launchCoroutine {
             handleResult(repository.getWeekForecast(location))
-        }
-    }
-
-    private fun getData(city: String) {
-        startLoading()
-        launchCoroutine {
-            handleResult(repository.getWeekForecast(city))
         }
     }
 
@@ -64,26 +59,24 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
         if (location == null) {
             sendEvent(WeatherEvent.NoLocationDetectedEvent)
         } else {
+            currentLocation = location
             getData(location)
         }
     }
 
     override fun onRefresh() {
-        _currentCity.value?.let {
-            getData(it.name)
+        currentLocation?.let {
+            getData(it)
         }
     }
 
     fun updateFavoriteState() {
         _currentCity.value?.let {
             launchCoroutine {
-                if (it.isFavorite)
-                {
+                if (it.isFavorite) {
                     repository.removeCityFromFavorites(it)
                     _currentCity.value = it.copy(isFavorite = false)
-                }
-                else
-                {
+                } else {
                     repository.addCityToFavorites(it)
                     _currentCity.value = it.copy(isFavorite = true)
                 }

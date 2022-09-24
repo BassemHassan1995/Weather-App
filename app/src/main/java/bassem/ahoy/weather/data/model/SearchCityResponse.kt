@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 @Entity (tableName = "favorite")
 data class CityResponse(
-    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    @PrimaryKey var id: Int = 0,
     val name: String,
     val lat: String,
     val lon: String,
