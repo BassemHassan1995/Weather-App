@@ -53,7 +53,7 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun updateDegreeUnit(degreeUnit: DegreeUnit) =
         withContext(Dispatchers.Default) {
-            database.forecastDao().updateSettings(Settings(degreeUnit))
+            database.forecastDao().updateSettings(Settings(unit = degreeUnit))
         }
 
     override suspend fun addForecastToFavorites(weekForecast: WeekForecast) =

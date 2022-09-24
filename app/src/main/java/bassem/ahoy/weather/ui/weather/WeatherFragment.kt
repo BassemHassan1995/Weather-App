@@ -90,7 +90,7 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
         when (event) {
             WeatherEvent.NoLocationDetectedEvent -> showError(R.string.no_location_detected)
             WeatherEvent.GetLocationEvent -> checkPermissions()
-            is WeatherEvent.ErrorGettingForecastEvent -> TODO()
+            is WeatherEvent.ErrorGettingForecastEvent -> showToast(event.errorMessage)
         }
     }
 
