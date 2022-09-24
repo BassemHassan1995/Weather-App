@@ -18,12 +18,24 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "API_KEY", ""
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    flavorDimensions  "environment"
+    productFlavors{
+        staging{
+            dimension "environment"
+            buildConfigField("String", "API_KEY", "\"26b25336ac121a38653ff015c1deabd0\"")
+        }
+        production{
+            dimension "environment"
+            buildConfigField("String", "API_KEY", "\"acb105699e27ca337aab09c416939e5c\"")
         }
     }
     compileOptions {

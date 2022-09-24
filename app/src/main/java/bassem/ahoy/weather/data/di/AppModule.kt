@@ -30,7 +30,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AppModule {
+class AppModule {
 
     @Provides
     fun provideBaseUrl() = BASE_URL
