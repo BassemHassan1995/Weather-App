@@ -49,7 +49,7 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding, WeatherEvent>() {
         adapter = WeatherDayAdapter()
     }
 
-    override fun setupViews(view: View) {
+    override fun setupViews() {
         setupPermission()
         with(binding) {
             swipeRefreshLayout.setOnRefreshListener {

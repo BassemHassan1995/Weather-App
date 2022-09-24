@@ -34,7 +34,7 @@ abstract class BaseFragment<Binding : ViewBinding, UiEvent : Event> : Fragment()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViews(view)
+        setupViews()
         observeData()
     }
 
@@ -43,7 +43,7 @@ abstract class BaseFragment<Binding : ViewBinding, UiEvent : Event> : Fragment()
         _binding = null
     }
 
-    open fun setupViews(view: View) {}
+    open fun setupViews() {}
 
     @CallSuper
     open fun observeData() {

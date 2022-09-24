@@ -71,7 +71,7 @@ class DetailsFragment : BaseFragment<FragmentDetailsBinding, DetailsEvent>() {
         }
     }
 
-    override fun setupViews(view: View) {
+    override fun setupViews() {
         val latitude = navigationArgs.latitude.toDouble()
         val longitude = navigationArgs.longitude.toDouble()
 

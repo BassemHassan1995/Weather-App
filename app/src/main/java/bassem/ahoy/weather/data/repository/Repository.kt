@@ -12,9 +12,8 @@ interface Repository {
     suspend fun updateCurrentLocationForecast(weekForecast: WeekForecast)
     fun getLastKnownLocationForecast(): Flow<WeekForecast?>
 
-    suspend fun getAppSettings(): Settings
-    suspend fun updateDegreeUnit(degreeUnit: DegreeUnit)
-    suspend fun upsertAppSettings(settings: Settings)
+    suspend fun getDegreeUnit(): DegreeUnit
+    suspend fun setDegreeUnit(degreeUnit: DegreeUnit)
 
     fun getFavorites(): Flow<List<CityResponse>>
     suspend fun isCityFavorite(cityId: Int): Boolean

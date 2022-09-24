@@ -24,7 +24,9 @@
         tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_search_to_details"
-            app:destination="@id/details" />
+            app:destination="@id/details"
+            app:popUpTo="@id/search"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -34,7 +36,9 @@
         tools:layout="@layout/fragment_favorites">
         <action
             android:id="@+id/action_favorites_to_details"
-            app:destination="@id/details" />
+            app:destination="@id/details"
+            app:popUpTo="@id/favorites"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

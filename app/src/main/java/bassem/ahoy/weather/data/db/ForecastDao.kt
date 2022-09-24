@@ -1,9 +1,7 @@
 package bassem.ahoy.weather.data.db
 
-import android.database.sqlite.SQLiteConstraintException
 import androidx.room.*
 import bassem.ahoy.weather.data.model.CityResponse
-import bassem.ahoy.weather.data.model.Settings
 import bassem.ahoy.weather.data.model.WeekForecast
 import kotlinx.coroutines.flow.Flow
 
@@ -19,24 +17,6 @@ abstract class ForecastDao {
 
     @Delete
     abstract suspend fun deleteForecast(forecast: WeekForecast)
-
-    //Settings
-    @Query("SELECT * FROM settings LIMIT 1")
-    abstract suspend fun getSettings(): Settings?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertSettings(settings: Settings)
-
-    @Update
-    abstract suspend fun updateSettings(settings: Settings)
-
-    suspend fun upsertSettings(settings: Settings) {
-        try {
-            insertSettings(settings)
-        } catch (e: SQLiteConstraintException) {
-            updateSettings(settings)
-        }
-    }
 
     //Favorites
     @Query("SELECT * FROM favorite")

@@ -68,7 +68,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, SearchEvent>() {
         is SearchEvent.ErrorGettingResult -> showToast(event.errorMessage)
     }
 
-    override fun setupViews(view: View) {
+    override fun setupViews() {
         with(binding) {
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {

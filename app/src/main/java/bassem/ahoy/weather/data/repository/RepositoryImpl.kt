@@ -3,6 +3,7 @@ package bassem.ahoy.weather.data.repository
 import bassem.ahoy.weather.data.api.ApiHelper
 import bassem.ahoy.weather.data.db.AppDatabase
 import bassem.ahoy.weather.data.model.*
+import bassem.ahoy.weather.data.store.SettingsStore
 import bassem.ahoy.weather.utils.DataResult
 import bassem.ahoy.weather.utils.extensions.getApiError
 import bassem.ahoy.weather.utils.extensions.getDate
@@ -10,12 +11,14 @@ import bassem.ahoy.weather.utils.extensions.getTime
 import bassem.ahoy.weather.utils.extensions.getWeekDay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
     private val apiHelper: ApiHelper,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val settingsStore: SettingsStore
 ) : Repository {
 
     override suspend fun searchCity(query: String): DataResult<List<CityResponse>> = DataResult {
@@ -35,7 +38,7 @@ class RepositoryImpl @Inject constructor(
             val response = apiHelper.getWeekForecast(
                 longitude,
                 latitude,
-                getAppSettings().unit.getDegreeFormat()
+                getDegreeUnit().getDegreeFormat()
             )
             when (response.isSuccessful) {
                 true -> {
@@ -57,7 +60,7 @@ class RepositoryImpl @Inject constructor(
             val response = apiHelper.getWeekForecast(
                 longitude,
                 latitude,
-                getAppSettings().unit.getDegreeFormat()
+                getDegreeUnit().getDegreeFormat()
             )
             when (response.isSuccessful) {
                 true -> response.body()?.toTodayForecast()!!
@@ -75,26 +78,13 @@ class RepositoryImpl @Inject constructor(
         }
 
 
-    private suspend fun getDegreeUnitFromSettings(): DegreeUnit = getAppSettings().unit
+    private suspend fun getDegreeUnitFromSettings(): DegreeUnit = getDegreeUnit()
 
-    override suspend fun getAppSettings(): Settings =
-        withContext(Dispatchers.Default) {
-            val settings = database.forecastDao().getSettings()
+    override suspend fun getDegreeUnit(): DegreeUnit =
+        settingsStore.getUnit()
 
-            settings ?: Settings().apply {
-                upsertAppSettings(this)
-            }
-        }
-
-    override suspend fun updateDegreeUnit(degreeUnit: DegreeUnit) =
-        withContext(Dispatchers.Default) {
-            database.forecastDao().upsertSettings(Settings(unit = degreeUnit))
-        }
-
-    override suspend fun upsertAppSettings(settings: Settings) =
-        withContext(Dispatchers.Default) {
-            database.forecastDao().upsertSettings(settings)
-        }
+    override suspend fun setDegreeUnit(degreeUnit: DegreeUnit) =
+        settingsStore.setUnit(degreeUnit)
 
     override suspend fun addCityToFavorites(cityResponse: CityResponse) =
         withContext(Dispatchers.Default) {

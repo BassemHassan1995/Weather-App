@@ -58,7 +58,7 @@ class FavoritesFragment : BaseFragment<FragmentFavoritesBinding, FavoritesEvent>
         }
     }
 
-    override fun setupViews(view: View) {
+    override fun setupViews() {
         binding.recyclerViewFavorites.adapter = adapter
     }
 
