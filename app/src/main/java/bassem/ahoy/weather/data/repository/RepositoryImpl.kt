@@ -51,19 +51,25 @@ class RepositoryImpl @Inject constructor(
             }
         }
 
-    private fun getDegreeUnitFromSettings(): DegreeUnit = DegreeUnit.CELSIUS
+    private suspend fun getDegreeUnitFromSettings(): DegreeUnit = getAppSettings().unit
 
-    override suspend fun getAppSettings(): Settings = withContext(Dispatchers.Default) {
-        database.forecastDao().getSettings() ?: Settings()
-    }
+    override suspend fun getAppSettings(): Settings =
+        withContext(Dispatchers.Default) {
+            val settings = database.forecastDao().getSettings()
 
-    override suspend fun saveAppSettings() = withContext(Dispatchers.Default) {
-        database.forecastDao().insertSettings(Settings())
-    }
+            settings ?: Settings().apply {
+                upsertAppSettings(this)
+            }
+        }
 
     override suspend fun updateDegreeUnit(degreeUnit: DegreeUnit) =
         withContext(Dispatchers.Default) {
-            database.forecastDao().updateSettings(Settings(unit = degreeUnit))
+            database.forecastDao().upsertSettings(Settings(unit = degreeUnit))
+        }
+
+    override suspend fun upsertAppSettings(settings: Settings) =
+        withContext(Dispatchers.Default) {
+            database.forecastDao().upsertSettings(settings)
         }
 
     override suspend fun addForecastToFavorites(weekForecast: WeekForecast) =
@@ -81,10 +87,10 @@ class RepositoryImpl @Inject constructor(
             database.forecastDao().updateForecast(weekForecast)
         }
 
-    private fun WeekForecastResponse.toWeekForecast(): WeekForecast =
+    private suspend fun WeekForecastResponse.toWeekForecast(): WeekForecast =
         WeekForecast(city = city.name, weatherDays = list.map { it.toDayWeather() })
 
-    private fun DayForecast.toDayWeather(): DayWeather =
+    private suspend fun DayForecast.toDayWeather(): DayWeather =
         DayWeather(
             weekDay = dt.getWeekDay(),
             date = dt.getDate(),

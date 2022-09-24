@@ -1,5 +1,6 @@
 package bassem.ahoy.weather.data.db
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.room.*
 import bassem.ahoy.weather.data.model.Settings
 import bassem.ahoy.weather.data.model.WeekForecast
@@ -42,5 +43,13 @@ abstract class ForecastDao {
 
     @Update
     abstract suspend fun updateSettings(settings: Settings)
+
+    suspend fun upsertSettings(settings: Settings) {
+        try {
+            insertSettings(settings)
+        } catch (e: SQLiteConstraintException) {
+            updateSettings(settings)
+        }
+    }
 
 }
