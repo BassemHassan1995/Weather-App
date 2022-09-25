@@ -9,6 +9,7 @@
 -   [x] Clicking on a city(favorite or searched for) will open a simple details view with one day weather
 -   [x] Adding settings to allow the user to change his preferences of the temperature unit type
 -   [x] Get a daily notification at 6:00 AM with today’s temperature.
+-   [x] Adding unit tests for both search city and get current location forecast.
 
 
 ## Layers

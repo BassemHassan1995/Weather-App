@@ -1,6 +1,7 @@
 package bassem.ahoy.weather.ui.weather
 
 import android.location.Location
+import androidx.annotation.VisibleForTesting
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import bassem.ahoy.weather.data.model.Coord
 import bassem.ahoy.weather.data.model.WeekForecast
@@ -15,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
-import kotlin.reflect.jvm.internal.impl.renderer.DescriptorRenderer.ValueParametersHandler.DEFAULT
 
 private const val DEFAULT_HOUR = 5
 private const val DEFAULT_MINUTE = 0
@@ -48,7 +48,8 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private fun getData(coord: Coord) {
+    @VisibleForTesting
+    internal fun getData(coord: Coord) {
         startLoading()
         launchCoroutine {
             handleResult(
@@ -60,7 +61,8 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private fun handleResult(result: DataResult<WeekForecast>) {
+    @VisibleForTesting
+    internal fun handleResult(result: DataResult<WeekForecast>) {
         when (result) {
             is DataResult.Failure -> result.cause.localizedMessage?.let {
                 sendEvent(WeatherEvent.ErrorGettingForecastEvent(it))
