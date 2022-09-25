@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "bassem.ahoy.weather"
-        minSdk 21
+        minSdk 23
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -102,7 +102,10 @@ dependencies {
 
     //Datastore
     implementation "androidx.datastore:datastore-preferences:$datastore_version"
-    implementation("androidx.datastore:datastore-preferences-core:1.0.0")
+    implementation "androidx.datastore:datastore-preferences-core:$datastore_version"
+
+    //WorkManager
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

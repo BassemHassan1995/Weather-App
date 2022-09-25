@@ -5,6 +5,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import bassem.ahoy.weather.data.model.Coord
 import bassem.ahoy.weather.data.model.WeekForecast
 import bassem.ahoy.weather.data.model.toCityResponse
+import bassem.ahoy.weather.data.notifications.NotificationScheduler
 import bassem.ahoy.weather.data.repository.Repository
 import bassem.ahoy.weather.ui.base.BaseViewModel
 import bassem.ahoy.weather.utils.DataResult
@@ -14,9 +15,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
+import kotlin.reflect.jvm.internal.impl.renderer.DescriptorRenderer.ValueParametersHandler.DEFAULT
+
+private const val DEFAULT_HOUR = 5
+private const val DEFAULT_MINUTE = 0
 
 @HiltViewModel
-class WeatherViewModel @Inject constructor(private val repository: Repository) :
+class WeatherViewModel @Inject constructor(
+    private val repository: Repository, notificationScheduler: NotificationScheduler
+) :
     BaseViewModel<WeatherEvent>(), OnSuccessListener<Location?>,
     SwipeRefreshLayout.OnRefreshListener {
 
@@ -26,9 +33,11 @@ class WeatherViewModel @Inject constructor(private val repository: Repository) :
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
 
+
     init {
         getLastKnownLocation()
         checkCurrentLocation()
+        notificationScheduler.scheduleReminderNotification(DEFAULT_HOUR, DEFAULT_MINUTE)
     }
 
     private fun getLastKnownLocation() {
